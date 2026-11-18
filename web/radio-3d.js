@@ -256,7 +256,20 @@
     view.camera.position.set(0, 0, 8);
     view.camera.lookAt(0, 0, 0);
     view.camera.updateProjectionMatrix();
-    view.housing.scale.set((halfW * 2) / 4.7, (halfH * 2) / 1.36, 1);
+    const scaleX = (halfW * 2) / 4.7;
+    const scaleY = (halfH * 2) / 1.36;
+    view.housing.scale.set(scaleX, scaleY, 1);
+    // The bezel stretches to the wide window. The readout canvas must use that
+    // same aspect, or the digit texture is squashed across the screen plane.
+    const planeAspect = (4.12 * scaleX) / (0.9 * scaleY);
+    const canvasH = 480;
+    const canvasW = Math.max(1, Math.round(canvasH * planeAspect));
+    const readout = view.canvas2d;
+    if (readout.width !== canvasW || readout.height !== canvasH) {
+      readout.width = canvasW;
+      readout.height = canvasH;
+      view.texture.needsUpdate = true;
+    }
   }
 
   function drawReadout(ctx, canvas, text) {
@@ -267,22 +280,23 @@
     ctx.fillRect(0, 0, width, height);
     const [whole, frac] = Number(text).toFixed(1).split('.');
     const chars = `${whole.padStart(3, ' ')}${frac}`.split('');
-    const scale = 4.15;
+    const scale = (height * 0.74) / 66;
     const digitW = 44 * scale;
-    const gap = 18;
-    const total = digitW * 4 + gap * 3 + 22;
+    const gap = 8 * scale;
+    const dot = 16 * scale;
+    const total = digitW * 4 + gap * 3 + dot;
     let x = (width - total) / 2;
     const y = (height - 66 * scale) / 2;
     chars.forEach((char, index) => {
       if (index === 3) {
         ctx.shadowColor = '#ff3a18';
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 16;
         ctx.fillStyle = '#ff4b2a';
         ctx.beginPath();
-        ctx.arc(x + 8, y + 58 * scale, 7 * scale * 0.22, 0, Math.PI * 2);
+        ctx.arc(x + dot * 0.42, y + 56 * scale, 2.1 * scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
-        x += 22;
+        x += dot;
       }
       drawDigit(ctx, char, x, y, scale);
       x += digitW + gap;
