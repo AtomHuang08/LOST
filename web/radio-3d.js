@@ -3,29 +3,6 @@
 
   if (!window.THREE) return;
 
-  const SEGMENT_MAP = {
-    0: 'abcdef',
-    1: 'bc',
-    2: 'abdeg',
-    3: 'abcdg',
-    4: 'bcfg',
-    5: 'acdfg',
-    6: 'acdefg',
-    7: 'abc',
-    8: 'abcdefg',
-    9: 'abcdfg',
-  };
-
-  const SEGMENT_POINTS = {
-    a: [[8, 2], [32, 2], [36, 6], [32, 10], [8, 10], [4, 6]],
-    b: [[32, 8], [36, 4], [40, 8], [40, 30], [36, 34], [32, 30]],
-    c: [[32, 34], [36, 30], [40, 34], [40, 56], [36, 60], [32, 56]],
-    d: [[8, 54], [32, 54], [36, 58], [32, 62], [8, 62], [4, 58]],
-    e: [[4, 34], [8, 30], [12, 34], [12, 56], [8, 60], [4, 56]],
-    f: [[4, 8], [8, 4], [12, 8], [12, 30], [8, 34], [4, 30]],
-    g: [[8, 28], [32, 28], [36, 32], [32, 36], [8, 36], [4, 32]],
-  };
-
   const knobs = {};
   let display = null;
   let displayText = '';
@@ -278,49 +255,6 @@
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#08090b';
     ctx.fillRect(0, 0, width, height);
-    const [whole, frac] = Number(text).toFixed(1).split('.');
-    const chars = `${whole.padStart(3, ' ')}${frac}`.split('');
-    const scale = (height * 0.74) / 66;
-    const digitW = 44 * scale;
-    const gap = 8 * scale;
-    const dot = 16 * scale;
-    const total = digitW * 4 + gap * 3 + dot;
-    let x = (width - total) / 2;
-    const y = (height - 66 * scale) / 2;
-    chars.forEach((char, index) => {
-      if (index === 3) {
-        ctx.shadowColor = '#ff3a18';
-        ctx.shadowBlur = 16;
-        ctx.fillStyle = '#ff4b2a';
-        ctx.beginPath();
-        ctx.arc(x + dot * 0.42, y + 56 * scale, 2.1 * scale, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        x += dot;
-      }
-      drawDigit(ctx, char, x, y, scale);
-      x += digitW + gap;
-    });
-  }
-
-  function drawDigit(ctx, char, x, y, scale) {
-    const lit = char === ' ' ? '' : SEGMENT_MAP[char] || '';
-    Object.keys(SEGMENT_POINTS).forEach((name) => {
-      const on = lit.includes(name);
-      ctx.beginPath();
-      SEGMENT_POINTS[name].forEach((point, index) => {
-        const px = x + point[0] * scale;
-        const py = y + point[1] * scale;
-        if (index === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      });
-      ctx.closePath();
-      ctx.shadowBlur = on ? 22 : 0;
-      ctx.shadowColor = '#ff2e12';
-      ctx.fillStyle = on ? '#ff4d2e' : 'rgba(255, 55, 30, 0.13)';
-      ctx.fill();
-    });
-    ctx.shadowBlur = 0;
   }
 
   function fit(view) {
