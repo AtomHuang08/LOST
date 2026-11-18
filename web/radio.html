@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FM Radio</title>
+  <link rel="stylesheet" href="radio.css">
+</head>
+<body>
+  <main class="stage">
+    <h1 class="sr-only">FM Radio</h1>
+    <article class="boombox">
+      <div class="crown">
+        <div class="handle" aria-hidden="true"><span></span></div>
+      </div>
+
+      <section class="fascia">
+        <div class="fascia-top">
+          <span>FM</span>
+          <span class="vol-readout">VOL <em id="vol-num">70</em></span>
+        </div>
+        <div class="window">
+          <div class="digits" id="digits"></div>
+          <div class="glare"></div>
+        </div>
+        <p class="unit">MHz</p>
+        <div class="scale" id="scale">
+          <div class="needle" id="needle" aria-hidden="true">
+            <span class="carriage"><i></i></span>
+            <span class="blade"></span>
+          </div>
+        </div>
+        <div class="fascia-bottom">
+          <span id="status">NO SIGNAL</span>
+          <span class="bars" id="bars"></span>
+        </div>
+
+        <div class="deck">
+          <div class="control">
+            <div class="knob-slot">
+              <div
+                class="knob tune"
+                id="tune"
+                role="slider"
+                tabindex="0"
+                aria-label="Tuning"
+                aria-valuemin="87.5"
+                aria-valuemax="108"
+                aria-valuenow="98.5"
+                aria-valuetext="98.5 megahertz"
+              >
+                <div class="arc"></div>
+                <div class="ring"></div>
+                <div class="rotor">
+                  <div class="cap"><i class="mark"></i></div>
+                </div>
+              </div>
+            </div>
+            <div class="control-name">Tuning</div>
+            <div class="control-range">87.5 – 108.0</div>
+          </div>
+
+          <div class="control">
+            <div class="knob-slot">
+              <div
+                class="knob"
+                id="volume"
+                role="slider"
+                tabindex="0"
+                aria-label="Volume"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="70"
+                aria-valuetext="output volume 70"
+              >
+                <div class="arc"></div>
+                <div class="ring"></div>
+                <div class="rotor">
+                  <div class="cap"><i class="mark"></i></div>
+                </div>
+              </div>
+            </div>
+            <div class="control-name">Volume</div>
+            <div class="control-range">OUTPUT</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="body">
+        <div class="speaker" aria-hidden="true"></div>
+        <div class="speaker" aria-hidden="true"></div>
+      </section>
+    </article>
+    <p class="hint">Drag a knob to tune. Use the scroll wheel or arrow keys for finer steps. The volume knob controls output level.</p>
+  </main>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="radio-3d.js"></script>
+  <script src="radio.js"></script>
+</body>
+</html>
