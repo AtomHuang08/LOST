@@ -564,6 +564,33 @@ body {
   color: rgba(20, 20, 20, 0.72);
 }
 
+.knob-link {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.knob-link button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(20, 20, 20, 0.28);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.knob-link button:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.knob-link span {
+  margin-left: 8px;
+  font-size: 13px;
+  color: rgba(20, 20, 20, 0.72);
+}
+
 @media (max-width: 680px) {
   .deck { gap: 16px; }
   .knob-slot { width: 120px; height: 112px; }

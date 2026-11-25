@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>防火墙 · Firewall</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: rgba(244, 246, 248, 0.88);
+      --muted: rgba(214, 220, 226, 0.52);
+      --line: rgba(255, 255, 255, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #050608;
+      color: var(--ink);
+      font-family: "Songti SC", "STSong", "Noto Serif SC", Palatino, "Palatino Linotype", serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    .grain {
+      position: fixed;
+      inset: -30px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.16;
+      mix-blend-mode: overlay;
+      background-repeat: repeat;
+      background-size: 180px 180px;
+    }
+
+    .plaque, .dock, .error {
+      position: fixed;
+      z-index: 3;
+    }
+
+    .plaque {
+      top: 28px;
+      left: 32px;
+      max-width: min(420px, calc(100vw - 64px));
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 40px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+    }
+
+    .note {
+      margin: 12px 0 0;
+      max-width: 28em;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .dock {
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      padding: 0;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      font: inherit;
+    }
+
+    button:disabled { cursor: default; }
+
+    .disc {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      background:
+        radial-gradient(circle at 50% 32%, #4a5158 0%, #1a1e22 58%, #090a0c 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        inset 0 -10px 16px rgba(0, 0, 0, 0.5),
+        0 10px 28px rgba(0, 0, 0, 0.38);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    button:hover:not(:disabled) .disc {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    button:active:not(:disabled) .disc,
+    body[data-state="collapsing"] .disc,
+    body[data-state="reforming"] .disc {
+      transform: translateY(2px);
+      box-shadow:
+        inset 0 3px 8px rgba(0, 0, 0, 0.62),
+        0 4px 12px rgba(0, 0, 0, 0.28);
+    }
+
+    .led {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e7f3f4;
+      box-shadow: 0 0 10px rgba(210, 236, 238, 0.9);
+    }
+
+    body[data-state="collapsing"] .led {
+      background: #f0d2a6;
+      box-shadow: 0 0 14px rgba(240, 200, 140, 0.95);
+      animation: pulse 0.7s ease-in-out infinite;
+    }
+
+    body[data-state="reforming"] .led {
+      background: #d5eee8;
+      box-shadow: 0 0 14px rgba(190, 230, 220, 0.95);
+      animation: pulse 0.9s ease-in-out infinite;
+    }
+
+    body[data-state="collapsed"] .led {
+      background: #8d9398;
+      box-shadow: none;
+    }
+
+    @keyframes pulse {
+      50% { opacity: 0.45; }
+    }
+
+    .btn-label {
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.24em;
+      text-indent: 0.24em;
+    }
+
+    .meter {
+      width: 132px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: rgba(236, 242, 244, 0.85);
+    }
+
+    .hint {
+      margin: 0;
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .error {
+      left: 32px;
+      right: 32px;
+      bottom: 118px;
+      margin: 0;
+      padding: 12px 14px;
+      background: rgba(40, 8, 8, 0.88);
+      color: #ffd0d0;
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 640px) {
+      .plaque { top: 18px; left: 18px; }
+      h1 { font-size: 32px; }
+      .note { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .led { animation: none !important; }
+    }
+  </style>
+</head>
+<body data-state="idle">
+  <canvas id="view"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="plaque">
+    <p class="eyebrow">Firewall · 网页预览</p>
+    <h1>防火墙</h1>
+    <p class="note">白色半透明的墙，雾和粒子在砖格里缓慢流动。分界是一圈颗粒，砖心是不断跳动的数字。每块砖 3 千克，按下之后从正中心沿下缘剥落，粉尘按脱落的速度散开。</p>
+  </header>
+
+  <footer class="dock">
+    <button id="trigger" type="button">
+      <span class="disc"><span class="led"></span></span>
+      <span class="btn-label" id="btn-label">触发</span>
+    </button>
+    <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+    <p class="hint"><span id="status">墙体完整</span> · 点击墙面或按空格 · R 复位</p>
+  </footer>
+
+  <p id="shader-error" class="error" hidden></p>
+
+  <script src="vendor/three.min.js"></script>
+  <script type="module" src="main.js?v=14"></script>
+</body>
+</html>
