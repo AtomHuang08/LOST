@@ -26,10 +26,11 @@ jobs:
 
       - name: Assemble site
         run: |
-          mkdir -p _site/vendor
+          mkdir -p _site/vendor _site/audio
           cp web/radio.html _site/index.html
-          cp web/radio.css web/radio.js web/radio-3d.js _site/
+          cp web/radio.css web/radio.js web/radio-3d.js web/radio-audio.js web/radio-serial.js _site/
           cp web/vendor/three.min.js _site/vendor/
+          cp web/audio/* _site/audio/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
