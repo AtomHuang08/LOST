@@ -10,9 +10,13 @@
 
   const FREQUENCY_TRACKS = {
     89.5: { file: '89.5.mp3', label: 'CH 89.5' },
+    91.0: { file: '91.0.mp3', label: 'RACHEL' },
     94.1: { file: '94.1.mp3', label: 'CH 94.1' },
+    96.0: { file: '96.0.mp3', label: 'LAMBDA' },
     98.5: { file: '98.5.wav', label: 'CH 98.5' },
+    101.0: { file: '101.0.mp3', label: 'JACK' },
     103.3: { file: '103.3.mp3', label: 'CH 103.3' },
+    106.0: { file: '106.0.mp3', label: 'ANGELA' },
   };
 
   const radio = window.LOSTRadio;
